@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    image: stationmeteo-web:latest
+    container_name: stationmeteo-web
+    restart: unless-stopped
+    environment:
+      API_BASE: http://stationmeteo-api:5000
+    ports:
+      - "3000:3000"
+    networks:
+      - stationmeteo-net
+networks:
+  stationmeteo-net:
+    external: true

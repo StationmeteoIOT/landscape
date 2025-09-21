@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  api:
+    build: .
+    image: stationmeteo-api:latest
+    container_name: stationmeteo-api
+    restart: unless-stopped
+    environment:
+      DB_HOST: stationmeteo-db
+      DB_PORT: 3306
+      DB_NAME: stationmeteo
+      DB_USER: pico
+      DB_PASS: motdepassepico
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    networks:
+      - stationmeteo-net
+networks:
+  stationmeteo-net:
+    external: true
