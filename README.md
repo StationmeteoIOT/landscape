@@ -44,24 +44,28 @@ Une station météo connectée basée sur Raspberry Pi Pico W (MicroPython), qui
 ## Branchements
 
 ### BME280 (I2C1 recommandé)
+
 - VIN → 3.3V
 - GND → GND
 - SCL → GP7 (I2C1 SCL)
 - SDA → GP6 (I2C1 SDA)
 
 ### MQ135 (Qualité d'air)
+
 - VCC → 3.3V
 - GND → GND
 - AO → GP26 (ADC0)
 - DO → GP14 (entrée digitale)
 
 ### Capteur de pluie
+
 - VCC → 3.3V
 - GND → GND
 - AO → GP28 (ADC2)
 - DO → GP15 (entrée digitale)
 
 ### GUVA-S12SD (UV)
+
 - VCC → 3.3V
 - GND → GND
 - OUT → GP27 (ADC1)
@@ -69,15 +73,18 @@ Une station météo connectée basée sur Raspberry Pi Pico W (MicroPython), qui
 ## Structure du projet
 
 ### Fichiers MicroPython (Pico W)
+
 - `station_meteo.py` - Programme principal (collecte, Wi‑Fi, envoi API, logs détaillés)
 - `blink.py` - Test LED pour vérifier la carte
 
 Persistences locales côté Pico W:
+
 - `mq135_cal.json` – calibration MQ135 (R0)
 - `uv_cal.json` – offset/échelle UV
 - `rain_cal.json` – bornes sec/mouillé pluie
 
 ### Application Web (Next.js)
+
 - `/web` - Application Next.js pour la visualisation des données (police Rajdhani, esthétique DS)
 
 ## ⚙️ Configuration et exécution
@@ -118,6 +125,7 @@ npm run dev
 ## 📦 API – Endpoints
 
 - Santé: `GET /health`
+
   - Utilité: vérifier que le serveur répond.
   - Réponse attendue: HTTP 200 (contenu simple, p.ex. "OK").
 
@@ -165,17 +173,17 @@ curl -X POST http://51.91.141.222:5000/add \
 
 Table `mesures`
 
-| Colonne           | Type SQL                       | Description                                        |
-|-------------------|--------------------------------|----------------------------------------------------|
-| id                | INT AUTO_INCREMENT PRIMARY KEY | Identifiant unique                                 |
-| timestamp         | DATETIME                       | Date et heure de la mesure                         |
-| temperature       | FLOAT                          | Température en °C                                  |
-| humidite          | FLOAT                          | Humidité en %                                      |
-| pression          | FLOAT                          | Pression en hPa                                    |
-| co2               | FLOAT                          | Concentration de CO₂ (ppm)                         |
-| humidite_surface  | FLOAT                          | Humidité détectée par la plaque pluie (0–100%)     |
-| pluie_detectee    | BOOLEAN                        | 0 = pas de pluie, 1 = pluie détectée               |
-| indice_uv         | FLOAT                          | Indice UV calculé                                  |
+| Colonne          | Type SQL                       | Description                                    |
+| ---------------- | ------------------------------ | ---------------------------------------------- |
+| id               | INT AUTO_INCREMENT PRIMARY KEY | Identifiant unique                             |
+| timestamp        | DATETIME                       | Date et heure de la mesure                     |
+| temperature      | FLOAT                          | Température en °C                              |
+| humidite         | FLOAT                          | Humidité en %                                  |
+| pression         | FLOAT                          | Pression en hPa                                |
+| co2              | FLOAT                          | Concentration de CO₂ (ppm)                     |
+| humidite_surface | FLOAT                          | Humidité détectée par la plaque pluie (0–100%) |
+| pluie_detectee   | BOOLEAN                        | 0 = pas de pluie, 1 = pluie détectée           |
+| indice_uv        | FLOAT                          | Indice UV calculé                              |
 
 DDL de référence (MySQL/MariaDB):
 
@@ -196,6 +204,7 @@ CREATE TABLE IF NOT EXISTS mesures (
 > Selon le SGBD, `BOOLEAN` peut être mappé en `TINYINT(1)`.
 
 Correspondance API → DB:
+
 - `temperature` → `temperature`
 - `humidite` → `humidite`
 - `pression` → `pression`
@@ -242,37 +251,11 @@ Correspondance API → DB:
   - Laissez la station tourner quelques minutes pour apprendre les bornes sec/mouillé
   - Vérifiez `rain_cal.json`
 
----
-
-## 🔒 Sécurité & durcissement
-
-- L’endpoint `/add` est exposé; pensez à ajouter une authentification (clé API, token) et une validation stricte côté serveur.
-- Limitez l’origine (CORS) et le débit si nécessaire.
-
----
-
-## 📃 Licence
-
-Spécifiez la licence du projet ici (MIT, Apache-2.0, etc.).
-
----
-
-## 🙌 Remerciements
-
-- Communauté MicroPython & Raspberry Pi Pico W
-- Contributeurs du projet
-
----
-
-## 🧭 À faire (idées)
-
-- Ajouter un mode maintenance pour forcer des calibrations
-- Graphiques historiques côté web (moyennes/percentiles)
-- Authentification API et chiffrement (HTTPS)
-
 ## Améliorations futures
 
 - Ajout de plus de capteurs (direction du vent, luminosité, etc.)
-- Mode basse consommation pour une alimentation sur batterie
-- Stockage local des données en cas de perte de connexion
+- Mode basse consommation pour une alimentation sur batterie (même si avec nos panneaux on est déjà large)
+- Stockage local des données en cas de perte de connexion pour faire un tampon
 - Alertes configurables basées sur les seuils de mesure
+- Fiabilisation des données et de la véracité des valeures
+- Partage des fichier sur le net afin de permettre à tout le monde de reproduire la station !!
